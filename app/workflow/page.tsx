@@ -110,8 +110,8 @@ const NODE_META: Record<NodeKey, {
   nli: {
     label: "Medical NLI", sublabel: "Stance classification", color: "#fb7185", phase: 3,
     Icon: Brain,
-    tech: ["Gemini 2.0 Flash (primary)", "GPT-4.1 Mini (fallback 1)", "bart-large-mnli (fallback 2)", "Local keywords (fallback 3)"],
-    description: "Each of the 8 papers is classified as Supporting, Opposing, or Neutral relative to the user's query using Natural Language Inference. Primary classifier is Gemini 2.0 Flash (~2s). Falls back automatically to OpenAI GPT-4.1 Mini, then HuggingFace facebook/bart-large-mnli zero-shot NLI, then a local keyword scorer.",
+    tech: ["Gemini 2.5 Flash (primary)", "GPT-4.1 Mini (fallback 1)", "bart-large-mnli (fallback 2)", "Local keywords (fallback 3)"],
+    description: "Each of the 8 papers is classified as Supporting, Opposing, or Neutral relative to the user's query using Natural Language Inference. Primary classifier is Gemini 2.5 Flash (~2s). Falls back automatically to OpenAI GPT-4.1 Mini, then HuggingFace facebook/bart-large-mnli zero-shot NLI, then a local keyword scorer.",
     output: "8 papers labeled Support | Oppose | Neutral + confidence %",
     latency: 2000,
   },
@@ -126,8 +126,8 @@ const NODE_META: Record<NodeKey, {
   llm: {
     label: "RAG + LLM Chat", sublabel: "Evidence-grounded answers", color: "#818cf8", phase: 5,
     Icon: Sparkles,
-    tech: ["Gemini 2.0 Flash", "GPT-4.1 Mini fallback", "PMID citation grounding", "Two-panel chat UI"],
-    description: "All 8 retrieved abstracts are injected into a structured system prompt. Gemini 2.0 Flash (GPT-4.1 Mini as fallback) answers as a senior medical analyst — citing PMIDs inline, quoting statistics from the abstracts, never hallucinating beyond retrieved evidence. The two-panel UI shows cited papers highlighted in real-time.",
+    tech: ["Gemini 2.5 Flash", "GPT-4.1 Mini fallback", "PMID citation grounding", "Two-panel chat UI"],
+    description: "All 8 retrieved abstracts are injected into a structured system prompt. Gemini 2.5 Flash (GPT-4.1 Mini as fallback) answers as a senior medical analyst — citing PMIDs inline, quoting statistics from the abstracts, never hallucinating beyond retrieved evidence. The two-panel UI shows cited papers highlighted in real-time.",
     output: "Cited expert-level answers — every claim links to a verifiable PMID",
     latency: 2000,
   },
