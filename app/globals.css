@@ -1,26 +1,175 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: #04091a;
+  --color-foreground: #e2e8f0;
+  --color-surface: #070e22;
+  --color-surface-2: #0c1630;
+  --color-surface-3: #101e3d;
+  --color-border: #1a3060;
+  --color-border-dim: #0f1e40;
+
+  --color-primary: #38bdf8;
+  --color-primary-dim: #0ea5e9;
+  --color-primary-glow: rgba(56, 189, 248, 0.25);
+
+  --color-support: #34d399;
+  --color-support-dim: #10b981;
+  --color-support-bg: #021a11;
+  --color-support-border: #064e35;
+  --color-support-glow: rgba(52, 211, 153, 0.2);
+
+  --color-oppose: #fb7185;
+  --color-oppose-dim: #f43f5e;
+  --color-oppose-bg: #1c0610;
+  --color-oppose-border: #5c1326;
+  --color-oppose-glow: rgba(251, 113, 133, 0.2);
+
+  --color-neut: #a78bfa;
+  --color-neut-dim: #8b5cf6;
+  --color-neut-bg: #160c2d;
+  --color-neut-border: #3b1d7a;
+  --color-neut-glow: rgba(167, 139, 250, 0.2);
+
+  --color-muted: #475569;
+  --color-muted-text: #94a3b8;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #04091a;
+  color: #e2e8f0;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #070e22;
+}
+::-webkit-scrollbar-thumb {
+  background: #1a3060;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #254880;
+}
+
+/* Grid background pattern for landing page */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Glow animations */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #0c1630 25%,
+    #131e40 50%,
+    #0c1630 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: 6px;
+}
+
+/* Search input glow */
+.search-glow:focus-within {
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5), 0 0 24px rgba(56, 189, 248, 0.15);
+}
+
+/* Card hover effects */
+.abstract-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.abstract-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Stance badge pill */
+.stance-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Radial glow backgrounds */
+.hero-glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(80px);
 }
