@@ -39,6 +39,7 @@ async function callGemini(messages: { role: string; parts: { text: string }[] }[
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: messages }),
+      signal: AbortSignal.timeout(30000),
     }
   );
 

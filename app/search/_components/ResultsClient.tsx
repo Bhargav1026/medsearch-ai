@@ -92,6 +92,7 @@ export function SearchResultsClient({ initialQuery }: Props) {
   const [inputValue, setInputValue] = useState(activeQuery);
   const [data, setData] = useState<SearchResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingStage, setLoadingStage] = useState(0);
   const [error, setError] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
@@ -106,6 +107,7 @@ export function SearchResultsClient({ initialQuery }: Props) {
     lastFetchedQuery.current = q;
 
     setLoading(true);
+    setLoadingStage(0);
     setError("");
     setData(null);
 
@@ -127,6 +129,16 @@ export function SearchResultsClient({ initialQuery }: Props) {
       setLoading(false);
     }
   }, []);
+
+  // Multi-stage loading progress
+  useEffect(() => {
+    if (!loading) { setLoadingStage(0); return; }
+    // Stage 0 → 1 after ~1.5s (PubMed fetch usually done)
+    const t1 = setTimeout(() => setLoadingStage(1), 1500);
+    // Stage 1 → 2 after ~3.5s (re-ranking done)
+    const t2 = setTimeout(() => setLoadingStage(2), 3500);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [loading]);
 
   // Fire search whenever the URL query changes (covers initial load + re-search)
   useEffect(() => {
@@ -229,16 +241,18 @@ export function SearchResultsClient({ initialQuery }: Props) {
       {/* Stats bar */}
       {data && !isLoading && (
         <div
-          className="flex items-center gap-4 px-4 sm:px-6 py-2.5 border-b border-border-dim text-xs text-muted-text flex-wrap"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 px-4 sm:px-6 py-2 border-b border-border-dim text-xs text-muted-text"
           style={{ background: "#070e22" }}
         >
-          <div className="flex items-center gap-1.5">
-            <Database className="w-3 h-3" />
-            <span>
-              <strong className="text-foreground">{data.totalFound}</strong> abstracts retrieved
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
+          {/* Left: counts */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-1.5">
+              <Database className="w-3 h-3" />
+              <span>
+                <strong className="text-foreground">{data.totalFound}</strong> abstracts
+              </span>
+            </div>
+            <span className="text-border hidden sm:block">|</span>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-support" />
               <strong className="text-support">{data.results.support.length}</strong> supporting
@@ -252,7 +266,8 @@ export function SearchResultsClient({ initialQuery }: Props) {
               <strong className="text-neut">{data.results.neutral.length}</strong> neutral
             </span>
           </div>
-          <div className="ml-auto flex items-center gap-3">
+          {/* Right: timings */}
+          <div className="flex items-center gap-3 flex-wrap shrink-0">
             <span
               className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold"
               style={{
@@ -265,11 +280,11 @@ export function SearchResultsClient({ initialQuery }: Props) {
             </span>
             <span className="flex items-center gap-1">
               <Zap className="w-3 h-3 text-primary" />
-              Retrieval: {data.retrievalMs}ms
+              {data.retrievalMs}ms retrieval
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3 text-neut" />
-              Classification: {data.classificationMs}ms
+              {data.classificationMs}ms classification
             </span>
           </div>
         </div>
@@ -294,16 +309,46 @@ export function SearchResultsClient({ initialQuery }: Props) {
         {/* Loading state */}
         {isLoading && (
           <>
-            {/* Loading indicator */}
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <div
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-xs text-muted-text border border-border"
-                style={{ background: "#070e22" }}
-              >
-                <div
-                  className="w-3 h-3 rounded-full border-2 border-primary border-t-transparent animate-spin"
-                />
-                Searching PubMed &amp; classifying stance…
+            {/* Multi-stage loading indicator */}
+            <div className="flex flex-col items-center gap-3 mb-6">
+              {/* Stage pills */}
+              <div className="flex items-center gap-2 flex-wrap justify-center">
+                {[
+                  { label: "Fetching PubMed abstracts", icon: Database },
+                  { label: "Re-ranking with BM25 + Semantic", icon: Zap },
+                  { label: "Classifying stance with AI", icon: FlaskConical },
+                ].map(({ label, icon: Icon }, i) => {
+                  const done = loadingStage > i;
+                  const active = loadingStage === i;
+                  return (
+                    <div
+                      key={i}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] border transition-all duration-500"
+                      style={{
+                        background: done
+                          ? "rgba(52,211,153,0.10)"
+                          : active
+                          ? "rgba(56,189,248,0.10)"
+                          : "#070e22",
+                        borderColor: done
+                          ? "rgba(52,211,153,0.35)"
+                          : active
+                          ? "rgba(56,189,248,0.35)"
+                          : "#1a3060",
+                        color: done ? "#34d399" : active ? "#38bdf8" : "#475569",
+                      }}
+                    >
+                      {done ? (
+                        <CheckCircle2 className="w-3 h-3" />
+                      ) : active ? (
+                        <div className="w-3 h-3 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                      ) : (
+                        <Icon className="w-3 h-3" />
+                      )}
+                      {label}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

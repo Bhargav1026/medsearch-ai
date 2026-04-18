@@ -223,9 +223,11 @@ For each abstract, decide whether it directly supports, directly opposes, or is 
 STRICT RULES:
 - "support": The paper reports empirical results that DIRECTLY confirm the query claim (e.g. RCT showing a drug works, cohort study confirming an association). Must be directly relevant AND show a positive result.
 - "oppose": The paper reports results that DIRECTLY contradict or refute the query claim (null results, no significant effect, harm shown, failed RCT). Must be directly relevant AND show a negative/null result.
-- "neutral": Everything else — review articles, background papers, mechanistic studies, papers only tangentially related to the query, case reports, editorials, or papers about a related but different topic.
+- "neutral": Everything else — review articles, systematic reviews, meta-analyses, background papers, mechanistic studies, papers only tangentially related to the query, case reports, editorials, or papers about a related but different topic.
 
 IMPORTANT: If the paper doesn't study the EXACT intervention or association in the query, classify it as "neutral" even if it's about the same disease area.
+IMPORTANT: Systematic reviews and meta-analyses that report MIXED findings (some studies support, some oppose) MUST be classified as "neutral", not "support".
+IMPORTANT: Distribute your classifications realistically — not every paper will support the claim. Be skeptical.
 
 Return ONLY valid JSON, no markdown, no explanation:
 [{"pmid":"12345678","stance":"support","confidence":0.88},...]
@@ -434,7 +436,7 @@ export async function POST(request: NextRequest) {
       ...a,
       excerpt: a.abstract,
       stance: cls?.stance ?? "neutral",
-      confidence: parseFloat((cls?.confidence ?? 0.6).toFixed(2)),
+      confidence: parseFloat(Math.max(cls?.confidence ?? 0.6, 0.45).toFixed(2)),
       score: parseFloat((rawScore / maxRrf).toFixed(3)), // normalised to [0,1]
     };
   });
